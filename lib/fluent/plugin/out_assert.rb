@@ -59,7 +59,8 @@ module Fluent
         modes.each do |mode|
           case mode
           when MODE_LEN
-            check_len element, check_val
+            result = check_len element, check_val
+            p result
           when MODE_TYPE
             check_type element, check_val
           when MODE_REG
@@ -73,6 +74,16 @@ module Fluent
 
     def check_len(element, val)
       p val
+
+      len = element['len'].split(' ').first
+      comparison = element['len'].split(' ').last
+
+      # case comparison
+      # when 'up'
+      #   if val.length >= len
+      # when 'down'
+      #   if val.length <= len
+      # end
     end
 
     def check_type(element, val)
