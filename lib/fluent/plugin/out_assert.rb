@@ -33,10 +33,10 @@ module Fluent
       @cases = []
       conf.elements.each do | element |
         case element.name
-        when 'case'
+        when "case"
           @cases << element
         else
-          raise Fluent::ConfigError, 'Unsupported Elements'
+          raise Fluent::ConfigError, "Unsupported Elements"
         end
       end
     end
@@ -45,53 +45,83 @@ module Fluent
       es.each { |time, record|
         chain.next
 
-        check record
+        assert record
       }
     end
 
     private
 
-    def check(record)
+    def assert(record)
       @cases.each do |element|
-        check_val = record[element['key']]
+        check_val = record[element["key"]]
 
-        modes = element['mode'].split(',')
+        modes = element["mode"].split(",")
         modes.each do |mode|
           case mode
           when MODE_LEN
-            result = check_len element, check_val
-            p result
+            result = valid_len? element, check_val
+            # ゴニョゴニョとレコードに詰める文字列を生成する
           when MODE_TYPE
-            check_type element, check_val
+            result = valid_type? element, check_val
+            # ゴニョゴニョとレコードに詰める文字列を生成する
           when MODE_REG
-            check_reg element, check_val
+            result = valid_reg? element, check_val
+            # ゴニョゴニョとレコードに詰める文字列を生成する
           else
             # TODO エラー処理
           end
+
+          p result
         end
       end
     end
 
-    def check_len(element, val)
-      p val
+    def valid_len?(element, val)
+      len = element["len"].split(" ").first.to_i
+      comparison = element["len"].split(" ").last
 
-      len = element['len'].split(' ').first
-      comparison = element['len'].split(' ').last
-
-      # case comparison
-      # when 'up'
-      #   if val.length >= len
-      # when 'down'
-      #   if val.length <= len
-      # end
+      case comparison
+      when "up"
+        val.length >= len
+      when "down"
+        val.length <= len
+      when "eq"
+        val.length == len
+      else
+        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = #{element['len']}"
+      end
     end
 
-    def check_type(element, val)
-      p val
+    def valid_type?(element, val)
+      case element["data_type"]
+      when "integer"
+        begin
+          Integer(val)
+          true
+        rescue ArgumentError
+          false
+        end
+      when "float"
+        begin
+          Float(val)
+          true
+        rescue ArgumentError
+          false
+        end
+      when "date"
+        time_format = element["time_format"]
+        begin
+          d = DateTime.strptime(val, time_format)
+          true
+        rescue ArgumentError
+          false
+        end
+      else
+        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = #{element['len']}"
+      end
     end
 
-    def check_reg(element, val)
-      p val
+    def valid_reg?(element, val)
     end
   end
 end
