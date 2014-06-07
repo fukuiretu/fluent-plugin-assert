@@ -1,6 +1,6 @@
 module Fluent
   class AssertOutput < Fluent::Output
-    Fluent::Plugin.register_output('assert', self)
+    Fluent::Plugin.register_output("assert", self)
 
     config_param :add_prefix, :string, :default => nil
     config_param :remove_prefix, :string, :default => nil
@@ -37,12 +37,12 @@ module Fluent
     end
 
     def emit(tag, es, chain)
-      es.each {|time, record|
+      es.each do |time, record|
         chain.next
 
         assert! record
         p record
-      }
+      end
     end
 
     private
@@ -66,10 +66,10 @@ module Fluent
             record.clear
           end
 
-          record["assert_#{i}"] = {
-            "message" => "#{key}=\"#{val}\" is not valid.",
-            "case" => element.to_s,
-            "origin_record" => cloned_record.to_s
+          record[:"assert_#{i}"] = {
+            message: "#{key}=\"#{val}\" is not valid.",
+            case: element.to_s,
+            origin_record: cloned_record.to_s
           }
         end
       end
@@ -87,12 +87,13 @@ module Fluent
       when "eq"
         val.length == len
       else
-        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = #{comparison}"
+        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = \"#{comparison}\""
       end
     end
 
     def valid_type?(element, val)
-      case element["data_type"]
+      data_type = element["data_type"]
+      case data_type
       when "integer"
         begin
           Integer(val)
@@ -116,7 +117,7 @@ module Fluent
           false
         end
       else
-        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = #{element['len']}"
+        raise Fluent::ConfigError, "Unsupported Parameter for mode type. parameter = #{data_type}"
       end
     end
 

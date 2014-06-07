@@ -10,6 +10,7 @@ class AssertOutputTest < Test::Unit::TestCase
     <case>
       mode type
       key hoge
+      len 5 up
       data_type date
       time_format %Y-%m-%d
     </case>
