@@ -2,13 +2,8 @@ module Fluent
   class AssertOutput < Fluent::Output
     Fluent::Plugin.register_output('assert', self)
 
-    MODE_LEN = 'len'
-    MODE_TYPE = 'type'
-    MODE_REG = 'reg'
-
     config_param :add_prefix, :string, :default => nil
     config_param :remove_prefix, :string, :default => nil
-
 
     # Define `log` method for v0.10.42 or earlier
     unless method_defined?(:log)
@@ -31,7 +26,7 @@ module Fluent
       end
 
       @cases = []
-      conf.elements.each do | element |
+      conf.elements.each do |element|
         case element.name
         when "case"
           @cases << element
@@ -42,36 +37,40 @@ module Fluent
     end
 
     def emit(tag, es, chain)
-      es.each { |time, record|
+      es.each {|time, record|
         chain.next
 
-        assert record
+        assert! record
+        p record
       }
     end
 
     private
 
-    def assert(record)
-      @cases.each do |element|
-        check_val = record[element["key"]]
+    def assert!(record)
+      cloned_record = nil
 
-        modes = element["mode"].split(",")
-        modes.each do |mode|
-          case mode
-          when MODE_LEN
-            result = valid_len? element, check_val
-            # ゴニョゴニョとレコードに詰める文字列を生成する
-          when MODE_TYPE
-            result = valid_type? element, check_val
-            # ゴニョゴニョとレコードに詰める文字列を生成する
-          when MODE_REG
-            result = valid_reg? element, check_val
-            # ゴニョゴニョとレコードに詰める文字列を生成する
-          else
-            # TODO エラー処理
+      @cases.each.with_index(1) do |element, i|
+        key = element["key"]
+        val = record[key]
+
+        is_valid = false
+        element["mode"].split(",").each do |mode|
+          valid_result = send("valid_#{mode}?", element, val)
+          is_valid = is_valid || valid_result
+        end
+
+        unless is_valid
+          if cloned_record.nil?
+            cloned_record = record.clone
+            record.clear
           end
 
-          p result
+          record["assert_#{i}"] = {
+            "message" => "#{key}=\"#{val}\" is not valid.",
+            "case" => element.to_s,
+            "origin_record" => cloned_record.to_s
+          }
         end
       end
     end
@@ -88,7 +87,7 @@ module Fluent
       when "eq"
         val.length == len
       else
-        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = #{element['len']}"
+        raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = #{comparison}"
       end
     end
 

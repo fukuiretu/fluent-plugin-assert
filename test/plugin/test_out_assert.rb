@@ -26,6 +26,6 @@ class AssertOutputTest < Test::Unit::TestCase
   def test_emit
     d = create_driver
     time = Time.parse("2012-01-02 13:14:15").to_i
-    d.emit({'hoge' => "2014-01-01"}, time)
+    d.emit({'hoge' => "2014-01-"}, time)
   end
 end
