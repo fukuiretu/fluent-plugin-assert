@@ -23,6 +23,7 @@ module Fluent
 
       if @remove_tag_prefix
         @remove_tag_prefix_string = @remove_prefix + '.'
+        @removed_length = @removed_prefix_string.length
       end
 
       @cases = []
@@ -40,10 +41,15 @@ module Fluent
       es.each do |time, record|
         chain.next
 
-        assert!(record)
-        p record
+        assert_result = assert!(record)
+        tag =
+          if assert_result
+            @assert_false_tag_prefix_string + tag
+          else
+            tag[@removed_length..-1]
+          end
 
-        # Fluent::Engine.emit(tag, time, record)
+        Fluent::Engine.emit(tag, time, record)
       end
     end
 
@@ -77,6 +83,8 @@ module Fluent
           }
         end
       end
+
+      cloned_record.nil?
     end
 
     def valid_len?(element, val)
