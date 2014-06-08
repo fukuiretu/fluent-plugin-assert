@@ -2,8 +2,8 @@ module Fluent
   class AssertOutput < Fluent::Output
     Fluent::Plugin.register_output("assert", self)
 
-    config_param :add_prefix, :string, :default => nil
-    config_param :remove_prefix, :string, :default => nil
+    config_param :assert_false_tag_prefix, :string, :default => nil
+    config_param :remove_tag_prefix, :string, :default => nil
 
     # Define `log` method for v0.10.42 or earlier
     unless method_defined?(:log)
@@ -17,12 +17,12 @@ module Fluent
     def configure(conf)
       super
 
-      if @remove_prefix
-        @removed_prefix_string = @remove_prefix + '.'
+      if @assert_false_tag_prefix
+        @assert_false_tag_prefix_string = @assert_false_tag_prefix + '.'
       end
 
-      if @add_prefix
-        @added_prefix_string = @add_prefix + '.'
+      if @remove_tag_prefix
+        @remove_tag_prefix_string = @remove_prefix + '.'
       end
 
       @cases = []
@@ -40,8 +40,10 @@ module Fluent
       es.each do |time, record|
         chain.next
 
-        assert! record
+        assert!(record)
         p record
+
+        # Fluent::Engine.emit(tag, time, record)
       end
     end
 
@@ -61,13 +63,15 @@ module Fluent
         end
 
         unless is_valid
+          log.debug "#key is assert false. value=#{val}"
+
           if cloned_record.nil?
             cloned_record = record.clone
             record.clear
           end
 
           record[:"assert_#{i}"] = {
-            message: "#{key}=\"#{val}\" is not valid.",
+            message: "#{key}=\"#{val}\" is assert false.",
             case: element.to_s,
             origin_record: cloned_record.to_s
           }
@@ -121,7 +125,9 @@ module Fluent
       end
     end
 
-    def valid_reg?(element, val)
+    def valid_regexp?(element, val)
+      regexp_format = element["regexp_format"]
+      !/#{regexp_format}/.match(val).nil?
     end
   end
 end
