@@ -2,8 +2,9 @@ module Fluent
   class AssertOutput < Fluent::Output
     Fluent::Plugin.register_output("assert", self)
 
+    config_param :assert_true_remove_tag_prefix, :string, :default => nil
     config_param :assert_false_tag_prefix, :string, :default => nil
-    config_param :remove_tag_prefix, :string, :default => nil
+
 
     # Define `log` method for v0.10.42 or earlier
     unless method_defined?(:log)
@@ -21,9 +22,9 @@ module Fluent
         @assert_false_tag_prefix_string = @assert_false_tag_prefix + '.'
       end
 
-      if @remove_tag_prefix
-        @remove_tag_prefix_string = @remove_prefix + '.'
-        @removed_length = @removed_prefix_string.length
+      if @assert_true_remove_tag_prefix
+        @assert_true_remove_tag_prefix_string = @assert_true_remove_tag_prefix + '.'
+        @removed_length = @assert_true_remove_tag_prefix_string.length
       end
 
       @cases = []
@@ -44,9 +45,9 @@ module Fluent
         assert_result = assert!(record)
         tag =
           if assert_result
-            @assert_false_tag_prefix_string + tag
-          else
             tag[@removed_length..-1]
+          else
+            @assert_false_tag_prefix_string + tag
           end
 
         Fluent::Engine.emit(tag, time, record)
@@ -69,7 +70,7 @@ module Fluent
         end
 
         unless is_valid
-          log.debug "#key is assert false. value=#{val}"
+          log.debug "#{key} is assert false. value=#{val}"
 
           if cloned_record.nil?
             cloned_record = record.clone

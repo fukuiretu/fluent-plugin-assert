@@ -6,7 +6,8 @@ class AssertOutputTest < Test::Unit::TestCase
   end
 
   CONFIG = %[
-    add_prefix hoge
+    assert_true_remove_tag_prefix assert
+    assert_false_tag_prefix pre.false
     <case>
       mode type
       key hoge
@@ -16,7 +17,7 @@ class AssertOutputTest < Test::Unit::TestCase
     </case>
   ]
 
-  def create_driver(conf = CONFIG, tag='test')
+  def create_driver(conf = CONFIG, tag='assert.test')
     Fluent::Test::OutputTestDriver.new(Fluent::AssertOutput, tag).configure(conf)
   end
 
