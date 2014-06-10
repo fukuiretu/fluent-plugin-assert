@@ -29,8 +29,7 @@ module Fluent
 
       @cases = []
       conf.elements.each do |element|
-        case element.name
-        when "case"
+        if element.name == "case"
           @cases << element
         else
           raise Fluent::ConfigError, "Unsupported Elements"
@@ -42,9 +41,8 @@ module Fluent
       es.each do |time, record|
         chain.next
 
-        assert_result = assert!(record)
         tag =
-          if assert_result
+          if assert!(record)
             tag[@removed_length..-1]
           else
             @assert_false_tag_prefix_string + tag

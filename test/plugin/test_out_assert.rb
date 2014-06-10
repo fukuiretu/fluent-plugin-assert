@@ -21,13 +21,17 @@ class AssertOutputTest < Test::Unit::TestCase
     Fluent::Test::OutputTestDriver.new(Fluent::AssertOutput, tag).configure(conf)
   end
 
-  def test_configure
+  def test_configure_1
     d = create_driver
   end
 
   def test_emit
     d = create_driver
     time = Time.parse("2012-01-02 13:14:15").to_i
-    d.emit({'hoge' => "2014-01-"}, time)
+    d.run do
+      d.emit({'hoge' => "2014-01-"}, time)
+    end
+
+    emits = d.emits
   end
 end
