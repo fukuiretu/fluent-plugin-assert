@@ -61,13 +61,13 @@ module Fluent
         key = element["key"]
         val = record[key]
 
-        is_valid = false
+        is_fail = false
         element["mode"].split(",").each do |mode|
           valid_result = send("valid_#{mode}?", element, val)
-          is_valid = is_valid || valid_result
+          is_fail = is_fail || valid_result
         end
 
-        unless is_valid
+        unless is_fail
           log.debug "#{key} is assert false. value=#{val}"
 
           if cloned_record.nil?
@@ -75,10 +75,10 @@ module Fluent
             record.clear
           end
 
-          record[:"assert_#{i}"] = {
-            message: "#{key}=\"#{val}\" is assert false.",
-            case: element.to_s,
-            origin_record: cloned_record.to_s
+          record["assert_#{i}"] = {
+            "message" => "#{key}=\"#{val}\" is assert fail.",
+            "case" => element.to_s,
+            "origin_record" => cloned_record.to_s
           }
         end
       end
