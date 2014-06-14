@@ -61,24 +61,24 @@ module Fluent
         key = element["key"]
         val = record[key]
 
-        is_valid = false
+        is_success = true
         element["mode"].split(",").each do |mode|
           valid_result = send("valid_#{mode}?", element, val)
-          is_valid = is_valid || valid_result
+          is_success = is_success && valid_result
         end
 
-        unless is_valid
-          log.debug "#{key} is assert false. value=#{val}"
+        unless is_success
+          log.debug "#{key} is assert fail. value=#{val}"
 
           if cloned_record.nil?
             cloned_record = record.clone
             record.clear
           end
 
-          record[:"assert_#{i}"] = {
-            message: "#{key}=\"#{val}\" is assert false.",
-            case: element.to_s,
-            origin_record: cloned_record.to_s
+          record["assert_#{i}"] = {
+            "message" => "#{key}=\"#{val}\" is assert fail.",
+            "case" => element.to_s,
+            "origin_record" => cloned_record.to_s
           }
         end
       end
@@ -120,7 +120,13 @@ module Fluent
           false
         end
       when "date"
-        time_format = element["time_format"]
+        time_format =
+          if element["time_format"].nil?
+            "%Y-%m-%d %H:%M:%S"
+          else
+            element["time_format"]
+          end
+
         begin
           d = DateTime.strptime(val, time_format)
           true
