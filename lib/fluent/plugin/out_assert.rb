@@ -2,9 +2,8 @@ module Fluent
   class AssertOutput < Fluent::Output
     Fluent::Plugin.register_output("assert", self)
 
-    config_param :assert_true_remove_tag_prefix, :string, :default => nil
-    config_param :assert_false_tag_prefix, :string, :default => nil
-
+    config_param :assert_pass_remove_tag_prefix, :string, :default => nil
+    config_param :assert_fail_tag_prefix, :string, :default => nil
 
     # Define `log` method for v0.10.42 or earlier
     unless method_defined?(:log)
@@ -18,13 +17,13 @@ module Fluent
     def configure(conf)
       super
 
-      if @assert_false_tag_prefix
-        @assert_false_tag_prefix_string = @assert_false_tag_prefix + '.'
+      if @assert_fail_tag_prefix
+        @assert_fail_tag_prefix_string = @assert_fail_tag_prefix + '.'
       end
 
-      if @assert_true_remove_tag_prefix
-        @assert_true_remove_tag_prefix_string = @assert_true_remove_tag_prefix + '.'
-        @removed_length = @assert_true_remove_tag_prefix_string.length
+      if @assert_pass_remove_tag_prefix
+        assert_pass_remove_tag_prefix_string = @assert_pass_remove_tag_prefix + '.'
+        @removed_length = assert_pass_remove_tag_prefix_string.length
       end
 
       @cases = []
@@ -45,7 +44,7 @@ module Fluent
           if assert!(record)
             tag[@removed_length..-1]
           else
-            @assert_false_tag_prefix_string + tag
+            @assert_fail_tag_prefix_string + tag
           end
 
         Fluent::Engine.emit(tag, time, record)
@@ -55,11 +54,17 @@ module Fluent
     private
 
     def assert!(record)
-      cloned_record = nil
+      origin_record_str = nil
 
       @cases.each.with_index(1) do |element, i|
         key = element["key"]
         val = record[key]
+        fail_condition =
+          if element["fail_condition"].nil?
+            "false"
+          else
+            element["fail_condition"]
+          end
 
         is_success = true
         element["mode"].split(",").each do |mode|
@@ -67,23 +72,23 @@ module Fluent
           is_success = is_success && valid_result
         end
 
-        unless is_success
+        if is_success.to_s == fail_condition
           log.debug "#{key} is assert fail. value=#{val}"
 
-          if cloned_record.nil?
-            cloned_record = record.clone
+          if origin_record_str.nil?
+            origin_record_str = record.to_s
             record.clear
           end
 
           record["assert_#{i}"] = {
             "message" => "#{key}=\"#{val}\" is assert fail.",
             "case" => element.to_s,
-            "origin_record" => cloned_record.to_s
+            "origin_record" => origin_record_str
           }
         end
       end
 
-      cloned_record.nil?
+      origin_record_str.nil?
     end
 
     def valid_len?(element, val)

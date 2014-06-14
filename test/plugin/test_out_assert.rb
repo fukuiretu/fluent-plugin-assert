@@ -6,8 +6,8 @@ class AssertOutputTest < Test::Unit::TestCase
   end
 
   CONFIG = %[
-    assert_true_remove_tag_prefix assert
-    assert_false_tag_prefix pre.false
+    assert_pass_remove_tag_prefix assert
+    assert_fail_tag_prefix pre.false
     <case>
       mode type
       key hoge
@@ -27,8 +27,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_len_1
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode len
         key hoge
@@ -61,8 +61,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_len_2
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode len
         key hoge
@@ -95,8 +95,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_len_3
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode len
         key hoge
@@ -129,8 +129,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_type_1()
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode type
         key hoge
@@ -163,8 +163,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_type_2()
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode type
         key hoge
@@ -197,8 +197,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_type_3()
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode type
         key hoge
@@ -226,8 +226,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_valid_regexp_1()
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode regexp
         key hoge
@@ -255,8 +255,8 @@ class AssertOutputTest < Test::Unit::TestCase
 
   def test_emit_mixing_1()
     config = %[
-      assert_true_remove_tag_prefix assert
-      assert_false_tag_prefix false
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
       <case>
         mode len,type
         key hoge
@@ -281,5 +281,36 @@ class AssertOutputTest < Test::Unit::TestCase
     assert_equal("test", emits[0][0])
     assert_equal(time, emits[0][1])
     assert_equal("hoge=\"1234\" is assert fail.", emits[1][2]["assert_1"]["message"])
+  end
+
+  def test_emit_mixing_2()
+    config = %[
+      assert_pass_remove_tag_prefix assert
+      assert_fail_tag_prefix false
+      <case>
+        mode len,type
+        key hoge
+        len 5 eq
+        data_type integer
+        fail_condition true
+      </case>
+    ]
+
+    d = create_driver(config)
+    time = Time.parse("2012-01-02 13:14:15").to_i
+    d.run do
+      d.emit({'hoge' => "12345"}, time)
+      d.emit({'hoge' => "1234"}, time)
+    end
+
+    emits = d.emits
+
+    assert_equal("false.assert.test", emits[0][0])
+    assert_equal(time, emits[0][1])
+    assert_equal("hoge=\"12345\" is assert fail.", emits[0][2]["assert_1"]["message"])
+
+    assert_equal("test", emits[1][0])
+    assert_equal(time, emits[1][1])
+    assert_equal("1234", emits[1][2]["hoge"])
   end
 end
