@@ -120,7 +120,13 @@ module Fluent
           false
         end
       when "date"
-        time_format = element["time_format"]
+        time_format =
+          if element["time_format"].nil?
+            "%Y-%m-%d %H:%M:%S"
+          else
+            element["time_format"]
+          end
+
         begin
           d = DateTime.strptime(val, time_format)
           true
