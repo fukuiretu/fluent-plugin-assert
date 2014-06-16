@@ -28,21 +28,11 @@ module Fluent
 
       @cases = conf.elements.select { |element|
         element.name == "case"
-      }.each { |element|
+      }.each do |element|
         element.keys.each do |k|
           element[k]
         end
-      }
-      # conf.elements.each do |element|
-      #   if element.name == "case"
-      #     @cases << element
-      #     element.keys.each do |k|
-      #       element[k]
-      #     end
-      #   else
-      #     raise Fluent::ConfigError, "Unsupported Elements"
-      #   end
-      # end
+      end
     end
 
     def emit(tag, es, chain)
@@ -69,7 +59,6 @@ module Fluent
         key = element["key"]
         val = record[key]
 
-        p "key=${key}"
         fail_condition =
           if element["fail_condition"].nil?
             "false"
