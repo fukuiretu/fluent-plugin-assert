@@ -26,14 +26,23 @@ module Fluent
         @removed_length = assert_pass_remove_tag_prefix_string.length
       end
 
-      @cases = []
-      conf.elements.each do |element|
-        if element.name == "case"
-          @cases << element
-        else
-          raise Fluent::ConfigError, "Unsupported Elements"
+      @cases = conf.elements.select { |element|
+        element.name == "case"
+      }.each { |element|
+        element.keys.each do |k|
+          element[k]
         end
-      end
+      }
+      # conf.elements.each do |element|
+      #   if element.name == "case"
+      #     @cases << element
+      #     element.keys.each do |k|
+      #       element[k]
+      #     end
+      #   else
+      #     raise Fluent::ConfigError, "Unsupported Elements"
+      #   end
+      # end
     end
 
     def emit(tag, es, chain)
@@ -59,6 +68,8 @@ module Fluent
       @cases.each.with_index(1) do |element, i|
         key = element["key"]
         val = record[key]
+
+        p "key=${key}"
         fail_condition =
           if element["fail_condition"].nil?
             "false"
@@ -97,11 +108,11 @@ module Fluent
 
       case comparison
       when "up"
-        val.length >= len
+        val.to_s.length >= len
       when "down"
-        val.length <= len
+        val.to_s.length <= len
       when "eq"
-        val.length == len
+        val.to_s.length == len
       else
         raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = \"#{comparison}\""
       end
