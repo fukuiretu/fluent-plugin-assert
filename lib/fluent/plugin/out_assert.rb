@@ -57,7 +57,7 @@ module Fluent
 
       @cases.each.with_index(1) do |element, i|
         key = element["key"]
-        val = record[key]
+        val = record[key].to_s
 
         fail_condition =
           if element["fail_condition"].nil?
@@ -97,11 +97,11 @@ module Fluent
 
       case comparison
       when "up"
-        val.to_s.length >= len
+        val.length >= len
       when "down"
-        val.to_s.length <= len
+        val.length <= len
       when "eq"
-        val.to_s.length == len
+        val.length == len
       else
         raise Fluent::ConfigError, "Unsupported Parameter for mode len. parameter = \"#{comparison}\""
       end
