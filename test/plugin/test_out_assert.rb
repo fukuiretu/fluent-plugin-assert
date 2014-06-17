@@ -8,13 +8,13 @@ class AssertOutputTest < Test::Unit::TestCase
   CONFIG = %[
     assert_pass_remove_tag_prefix assert
     assert_fail_tag_prefix pre.false
-    <case>
+    <test>
       mode type
       key hoge
       len 5 up
       data_type date
       time_format %Y-%m-%d
-    </case>
+    </test>
   ]
 
   def create_driver(conf = CONFIG, tag='assert.test')
@@ -29,11 +29,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode len
         key hoge
         len 5 up
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -63,11 +63,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode len
         key hoge
         len 5 down
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -97,11 +97,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode len
         key hoge
         len 5 eq
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -131,11 +131,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode type
         key hoge
         data_type integer
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -165,11 +165,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode type
         key hoge
         data_type float
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -199,11 +199,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode type
         key hoge
         data_type date
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -228,11 +228,11 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode regexp
         key hoge
         regexp_format ^ABCDEFG
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -257,12 +257,12 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode len,type
         key hoge
         len 5 eq
         data_type integer
-      </case>
+      </test>
     ]
 
     d = create_driver(config)
@@ -287,13 +287,13 @@ class AssertOutputTest < Test::Unit::TestCase
     config = %[
       assert_pass_remove_tag_prefix assert
       assert_fail_tag_prefix false
-      <case>
+      <test>
         mode len,type
         key hoge
         len 5 eq
         data_type integer
         fail_condition true
-      </case>
+      </test>
     ]
 
     d = create_driver(config)

@@ -26,12 +26,16 @@ module Fluent
         @removed_length = assert_pass_remove_tag_prefix_string.length
       end
 
-      @cases = conf.elements.select { |element|
-        element.name == "case"
+      @tests = conf.elements.select { |element|
+        element.name == "test"
       }.each do |element|
         element.keys.each do |k|
           element[k]
         end
+      end
+
+      if @tests.empty?
+        raise Fluent::ConfigError, "test elements is empty."
       end
     end
 
@@ -55,7 +59,7 @@ module Fluent
     def assert!(record)
       origin_record_str = nil
 
-      @cases.each.with_index(1) do |element, i|
+      @tests.each.with_index(1) do |element, i|
         key = element["key"]
         val = record[key].to_s
 
@@ -82,7 +86,7 @@ module Fluent
 
           record["assert_#{i}"] = {
             "message" => "#{key}=\"#{val}\" is assert fail.",
-            "case" => element.to_s,
+            "test" => element.to_s,
             "origin_record" => origin_record_str
           }
         end
