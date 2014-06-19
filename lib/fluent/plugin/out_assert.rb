@@ -57,11 +57,12 @@ module Fluent
     private
 
     def assert!(record)
-      origin_record_str = nil
+      origin_record = record.clone
+      cleared = false
 
       @tests.each.with_index(1) do |element, i|
         key = element["key"]
-        val = record[key].to_s
+        val = origin_record[key].to_s
 
         fail_condition =
           if element["fail_condition"].nil?
@@ -79,20 +80,20 @@ module Fluent
         if is_success.to_s == fail_condition
           log.debug "#{key} is assert fail. value=#{val}"
 
-          if origin_record_str.nil?
-            origin_record_str = record.to_s
+          unless cleared
             record.clear
+            cleared = true
           end
 
           record["assert_#{i}"] = {
             "message" => "#{key}=\"#{val}\" is assert fail.",
             "test" => element.to_s,
-            "origin_record" => origin_record_str
+            "origin_record" => origin_record.to_s
           }
         end
       end
 
-      origin_record_str.nil?
+      !cleared
     end
 
     def valid_len?(element, val)
