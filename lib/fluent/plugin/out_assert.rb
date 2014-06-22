@@ -85,7 +85,7 @@ module Fluent
             cleared = true
           end
 
-          record["assert_#{i}"] = {
+          record["fail_#{i}"] = {
             "message" => "#{key}=\"#{val}\" is assert fail.",
             "test" => element.to_s,
             "origin_record" => origin_record.to_s

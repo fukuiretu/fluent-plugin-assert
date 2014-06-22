@@ -56,7 +56,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[2][0])
     assert_equal(time, emits[2][1])
-    assert_equal("hoge=\"1234\" is assert fail.", emits[2][2]["assert_1"]["message"])
+    assert_equal("hoge=\"1234\" is assert fail.", emits[2][2]["fail_1"]["message"])
   end
 
   def test_emit_valid_len_2
@@ -86,7 +86,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[1][0])
     assert_equal(time, emits[1][1])
-    assert_equal("hoge=\"123456\" is assert fail.", emits[1][2]["assert_1"]["message"])
+    assert_equal("hoge=\"123456\" is assert fail.", emits[1][2]["fail_1"]["message"])
 
     assert_equal("test", emits[2][0])
     assert_equal(time, emits[2][1])
@@ -120,11 +120,11 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[1][0])
     assert_equal(time, emits[1][1])
-    assert_equal("hoge=\"123456\" is assert fail.", emits[1][2]["assert_1"]["message"])
+    assert_equal("hoge=\"123456\" is assert fail.", emits[1][2]["fail_1"]["message"])
 
     assert_equal("false.assert.test", emits[2][0])
     assert_equal(time, emits[2][1])
-    assert_equal("hoge=\"1234\" is assert fail.", emits[2][2]["assert_1"]["message"])
+    assert_equal("hoge=\"1234\" is assert fail.", emits[2][2]["fail_1"]["message"])
   end
 
   def test_emit_valid_type_1()
@@ -154,11 +154,11 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[1][0])
     assert_equal(time, emits[1][1])
-    assert_equal("hoge=\"123.45\" is assert fail.", emits[1][2]["assert_1"]["message"])
+    assert_equal("hoge=\"123.45\" is assert fail.", emits[1][2]["fail_1"]["message"])
 
     assert_equal("false.assert.test", emits[2][0])
     assert_equal(time, emits[2][1])
-    assert_equal("hoge=\"foo\" is assert fail.", emits[2][2]["assert_1"]["message"])
+    assert_equal("hoge=\"foo\" is assert fail.", emits[2][2]["fail_1"]["message"])
   end
 
   def test_emit_valid_type_2()
@@ -192,7 +192,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[2][0])
     assert_equal(time, emits[2][1])
-    assert_equal("hoge=\"foo\" is assert fail.", emits[2][2]["assert_1"]["message"])
+    assert_equal("hoge=\"foo\" is assert fail.", emits[2][2]["fail_1"]["message"])
   end
 
   def test_emit_valid_type_3()
@@ -221,7 +221,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[1][0])
     assert_equal(time, emits[1][1])
-    assert_equal("hoge=\"2013/01/01\" is assert fail.", emits[1][2]["assert_1"]["message"])
+    assert_equal("hoge=\"2013/01/01\" is assert fail.", emits[1][2]["fail_1"]["message"])
   end
 
   def test_emit_valid_regexp_1()
@@ -250,7 +250,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[1][0])
     assert_equal(time, emits[1][1])
-    assert_equal("hoge=\"hogeABCDEFGfoo\" is assert fail.", emits[1][2]["assert_1"]["message"])
+    assert_equal("hoge=\"hogeABCDEFGfoo\" is assert fail.", emits[1][2]["fail_1"]["message"])
   end
 
   def test_emit_mixing_1()
@@ -280,7 +280,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("test", emits[0][0])
     assert_equal(time, emits[0][1])
-    assert_equal("hoge=\"1234\" is assert fail.", emits[1][2]["assert_1"]["message"])
+    assert_equal("hoge=\"1234\" is assert fail.", emits[1][2]["fail_1"]["message"])
   end
 
   def test_emit_mixing_2()
@@ -307,7 +307,7 @@ class AssertOutputTest < Test::Unit::TestCase
 
     assert_equal("false.assert.test", emits[0][0])
     assert_equal(time, emits[0][1])
-    assert_equal("hoge=\"12345\" is assert fail.", emits[0][2]["assert_1"]["message"])
+    assert_equal("hoge=\"12345\" is assert fail.", emits[0][2]["fail_1"]["message"])
 
     assert_equal("test", emits[1][0])
     assert_equal(time, emits[1][1])
