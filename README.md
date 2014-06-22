@@ -1,5 +1,7 @@
 # fluent-plugin-assert, a plugin for [Fluentd](http://fluentd.org)
 
+[![Build Status](https://travis-ci.org/fukuiretu/fluent-plugin-assert.svg?branch=master)](https://travis-ci.org/fukuiretu/fluent-plugin-assert)
+
 
 # Overview
 Output Filter Plugin for assertion the data.By the result of the assertion, and rewrites the record and tag.
@@ -10,7 +12,7 @@ Output Filter Plugin for assertion the data.By the result of the assertion, and 
 ```
 <match assert.**>
   assert_pass_remove_tag_prefix assert
-  assert_fail_tag_prefix false
+  assert_fail_tag_prefix fail
   <test>
     mode len
     key txt
@@ -28,14 +30,14 @@ assert.data: {"id":2,"txt":"foo","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"hoge,"created_at":"2014-01-01 00:00:00"}
-false.assert.data: {"assert_1":{"message":"txt=\"foo\" is assert fail.","test":"<test>\n  mode len\n  key txt\n  len 4 up\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"foo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"assert_1":{"message":"txt=\"foo\" is assert fail.","test":"<test>\n  mode len\n  key txt\n  len 4 up\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"foo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 ## Ex2. type test
 ```
 <match assert.**>
   assert_pass_remove_tag_prefix assert
-  assert_fail_tag_prefix false
+  assert_fail_tag_prefix fail
   <test>
     mode type
     key txt
@@ -53,14 +55,14 @@ assert.data: {"id":2,"txt":"hoge","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"12345","created_at":"2014-01-01 00:00:00"}
-false.assert.data: {"assert_1":{"message":"txt=\"hoge\" is assert fail.","test":"<test>\n  mode type\n  key txt\n  data_type integer\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"hoge\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"assert_1":{"message":"txt=\"hoge\" is assert fail.","test":"<test>\n  mode type\n  key txt\n  data_type integer\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"hoge\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 ## Ex3. type test
 ```
 <match assert.**>
   assert_pass_remove_tag_prefix assert
-  assert_fail_tag_prefix false
+  assert_fail_tag_prefix fail
   <test>
     mode regexp
     key txt
@@ -78,14 +80,14 @@ assert.data: {"id":2,"txt":"barhogefoo","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"12345","created_at":"2014-01-01 00:00:00"}
-false.assert.data: {"assert_1":{"message":"txt=\"barhogefoo\" is assert fail.","test":"<test>\n  mode regexp\n  key txt\n  regexp_format \\Ahoge\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"barhogefoo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"assert_1":{"message":"txt=\"barhogefoo\" is assert fail.","test":"<test>\n  mode regexp\n  key txt\n  regexp_format \\Ahoge\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"barhogefoo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 ## Ex4. mix test
 ```
 <match assert.**>
   assert_pass_remove_tag_prefix assert
-  assert_fail_tag_prefix false
+  assert_fail_tag_prefix fail
   <test>
     mode type
     key id
@@ -114,11 +116,11 @@ assert.data: {"id":2,"txt":"1234","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"123.4","created_at":"2014-01-01 00:00:00"}
-false.assert.data: {"assert_1":{"message":"txt=\"1234\" is assert fail.","test":"<test>\n  mode len,type\n  key txt\n  len 5 eq\n  data_type float\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"1234\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"assert_1":{"message":"txt=\"1234\" is assert fail.","test":"<test>\n  mode len,type\n  key txt\n  len 5 eq\n  data_type float\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"1234\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 # Parameters
-### global
+### Global
 * **assert_pass_remove_tag_prefix** (required)
 
   Specifies the prefix of the tag to clear the test when passing through
@@ -127,39 +129,40 @@ false.assert.data: {"assert_1":{"message":"txt=\"1234\" is assert fail.","test":
 
   Specifies the prefix of the tag to be applied to the test failure
 
-### test directive
-##### common parameters
+### Test Directive
+##### Common Parameters
 * **mode** (required)
 
-  testするモードを指定します。以下のモードから選ぶことが可能です。(カンマ区切りで複数選択可)
+  Specifies the mode in which to test. It is possible to choose from the following modes. (Multiple selections are allowed, separated by commas)
 
-     1. len : 値の長さをチェックします
+     1. len : check the length of the value
 
-     2. type : 値の型をチェックします
+     2. type : check the type of value
 
-     3. regexp : 値を正規表現でチェックします
+     3. regexp : check in a regular expression value
 
 * **key** (required)
 
-  チェック対象となる値のキーを指定します
+  Specify the value of the key to be checked
 
 * **fail_condition** (optional)
 
-  failとする条件(true or false)を指定します。デフォルトはfalseです。
+  It specifies the (true or false) condition to be a fail. The default is false.
 
-##### each mode parameters
+##### Each Mode Parameters
 ###### mode: len
 
 * **len**　(required)
 
-  数値と、up or down or eqを指定します。
+  Specify the up or down or eq numbers and separated by spaces.
+
   Ex: len 5 up
 
 ###### mode: type
 
 * **data_type** (required)
 
-  チェックする型を指定します。以下の型が選択可能です。
+  The type is specified to be checked. The following types can be selected.
 
   1. integer
 
@@ -169,13 +172,13 @@ false.assert.data: {"assert_1":{"message":"txt=\"1234\" is assert fail.","test":
 
 * **time_format** (optional)
 
-  dateを選択した場合に指定することが可能です。デフォルトは"%Y-%m-%d %H:%M:%S"です。
+  It is possible that you specify if you have selected a date. The default is "% Y-% m-% d% H:% S: M%".
 
 ###### mode: regexp
 
 * **regexp_format** (required)
 
-  正規表現を指定します
+  Specify the regular expression
 
 ### other
 
