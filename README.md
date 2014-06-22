@@ -1,5 +1,4 @@
 # fluent-plugin-assert, a plugin for [Fluentd](http://fluentd.org)
-
 [![Build Status](https://travis-ci.org/fukuiretu/fluent-plugin-assert.svg?branch=master)](https://travis-ci.org/fukuiretu/fluent-plugin-assert)
 
 
@@ -30,7 +29,7 @@ assert.data: {"id":2,"txt":"foo","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"hoge,"created_at":"2014-01-01 00:00:00"}
-fail.assert.data: {"assert_1":{"message":"txt=\"foo\" is assert fail.","test":"<test>\n  mode len\n  key txt\n  len 4 up\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"foo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"fail_1":{"message":"txt=\"foo\" is assert fail.","test":"<test>\n  mode len\n  key txt\n  len 4 up\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"foo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 ## Ex2. type test
@@ -55,7 +54,7 @@ assert.data: {"id":2,"txt":"hoge","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"12345","created_at":"2014-01-01 00:00:00"}
-fail.assert.data: {"assert_1":{"message":"txt=\"hoge\" is assert fail.","test":"<test>\n  mode type\n  key txt\n  data_type integer\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"hoge\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"fail_1":{"message":"txt=\"hoge\" is assert fail.","test":"<test>\n  mode type\n  key txt\n  data_type integer\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"hoge\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 ## Ex3. type test
@@ -80,7 +79,7 @@ assert.data: {"id":2,"txt":"barhogefoo","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"12345","created_at":"2014-01-01 00:00:00"}
-fail.assert.data: {"assert_1":{"message":"txt=\"barhogefoo\" is assert fail.","test":"<test>\n  mode regexp\n  key txt\n  regexp_format \\Ahoge\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"barhogefoo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"fail_1":{"message":"txt=\"barhogefoo\" is assert fail.","test":"<test>\n  mode regexp\n  key txt\n  regexp_format \\Ahoge\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"barhogefoo\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 ## Ex4. mix test
@@ -116,7 +115,7 @@ assert.data: {"id":2,"txt":"1234","created_at":"2014-01-01 00:00:00"}
 ### Out.
 ```
 data: {"id":1,"txt":"123.4","created_at":"2014-01-01 00:00:00"}
-fail.assert.data: {"assert_1":{"message":"txt=\"1234\" is assert fail.","test":"<test>\n  mode len,type\n  key txt\n  len 5 eq\n  data_type float\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"1234\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
+fail.assert.data: {"fail_1":{"message":"txt=\"1234\" is assert fail.","test":"<test>\n  mode len,type\n  key txt\n  len 5 eq\n  data_type float\n</test>\n","origin_record":"{\"id\"=>1, \"txt\"=>\"1234\", \"created_at\"=>\"2014-01-01 00:00:00\"}"}}
 ```
 
 # Parameters
