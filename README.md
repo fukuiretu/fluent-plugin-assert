@@ -1,6 +1,7 @@
 # fluent-plugin-assert, a plugin for [Fluentd](http://fluentd.org)
-[![Build Status](https://travis-ci.org/fukuiretu/fluent-plugin-assert.svg?branch=master)](https://travis-ci.org/fukuiretu/fluent-plugin-assert)
 
+[![Build Status](https://travis-ci.org/fukuiretu/fluent-plugin-assert.svg?branch=master)](https://travis-ci.org/fukuiretu/fluent-plugin-assert)
+[![Gem Version](https://badge.fury.io/rb/fluent-plugin-assert.svg)](http://badge.fury.io/rb/fluent-plugin-assert)
 
 # Overview
 Output Filter Plugin for assertion the data.By the result of the assertion, and rewrites the record and tag.
